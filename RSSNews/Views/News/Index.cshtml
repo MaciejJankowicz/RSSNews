@@ -1,0 +1,94 @@
+﻿@model IEnumerable<RSSNews.Models.News>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Title)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Link)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PubDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Category)
+        </th>
+@if (User.Identity.IsAuthenticated)
+{
+        <th></th>
+}
+    </tr>
+
+@foreach (var item in Model) {
+    if (item.Category == "None")
+    {
+        item.Category = item.Source.Category;
+    }
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Title)
+        </td>
+        <td>
+            @Html.Raw(item.Description)
+            @*@Html.DisplayFor(modelItem => item.Description)*@
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Link)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.PubDate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Category)
+        </td>
+        @if (User.Identity.IsAuthenticated)
+        {
+        <td>
+            <input type="button" class="btn btn-primary like" id="like" value="Like" data-id="@($"{item.Id}")" />
+        </td>
+        }
+    </tr>
+}
+
+</table>
+
+@if (User.Identity.IsAuthenticated)
+{
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $(".like").click(function () {
+                var btn = $(this);
+                var id = btn.attr("data-id");
+                $.ajax({
+                    type: "POST",
+                    url: "/News/LikeNews",
+                    data: `{id: "${id}" }`,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "text",
+                    //success: function (response) {
+                    //    alert("Hello: " + response);
+                    //    btn.parent().prev().prev().html(response);
+                    //},
+                    //failure: function (response) {
+                    //    alert(response.responseText);
+                    //},
+                    //error: function (response) {
+                    //    alert(response.responseText);
+                    //}
+                });
+                btn.attr("disabled", true);
+            });
+        });
+    </script>
+}
