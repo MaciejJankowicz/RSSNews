@@ -26,6 +26,16 @@ namespace RSSNews.Repository
             Database.SetInitializer(new NewsInitializer());
         }
 
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<RSSNews.Models.News>().
+                HasRequired(s => s.Source).
+                WithMany(n => n.News).
+                WillCascadeOnDelete(true);
+
+            base.OnModelCreating(modelBuilder);
+        }
+
     }
 
     public class NewsInitializer : DropCreateDatabaseIfModelChanges<RSSNewsContext>
