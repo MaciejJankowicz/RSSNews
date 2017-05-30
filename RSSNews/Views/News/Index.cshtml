@@ -43,7 +43,8 @@
             @*@Html.DisplayFor(modelItem => item.Description)*@
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.Link)
+            <a href="@item.Link">Link</a>
+            @*@Html.L(modelItem => item.Link)*@
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.PubDate)

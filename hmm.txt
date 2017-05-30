@@ -33,5 +33,7 @@ wybor zrodel
 
 zrodla - wiele kategorii ?
 
+tlo i interakcja z baza
+
 obrazki w rss
 

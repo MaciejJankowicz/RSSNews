@@ -36,21 +36,30 @@ namespace RSSNews.Services
                 Link = n.Element("link").Value,
                 PubDate = DateTime.Parse(n.Element("pubDate").Value, System.Globalization.CultureInfo.InvariantCulture),  //, System.Globalization.CultureInfo.InvariantCulture
                 Source = source //db.Sources.First(m => m.Address == source)
-            }).ToList();
+            }).OrderByDescending(n => n.PubDate).ToList();
 
-            /*
-             * var exceptions = new HashSet<News>(rssItems);           
-             * exceptions.SymmetricExceptWith(db.News);
-             * db.News.AddRange(exceptions);
-            */
-
-            foreach (var item in rssItems)
+            var NewestRssItem = db.News.Where(n => n.Source.Address == source.Address).OrderByDescending(n => n.PubDate).FirstOrDefault();
+            if (NewestRssItem == null)
             {
-                if (!db.News.Any(n => n.Title == item.Title))
-                {
-                    db.News.Add(item);
-                }
+                db.News.AddRange(rssItems);
             }
+            else
+            {
+                int i = 0;
+                while (i < rssItems.Count && NewestRssItem.PubDate < rssItems[i].PubDate)
+                {
+                    db.News.Add(rssItems[i]);
+                    i++;
+                }
+            }          
+
+            //foreach (var item in rssItems)
+            //{
+            //    if (!db.News.Any(n => n.Title == item.Title))
+            //    {
+            //        db.News.Add(item);
+            //    }
+            //}
 
             db.SaveChanges();
         }
@@ -93,7 +102,7 @@ namespace RSSNews.Services
             List<News> toReturn = new List<News>();
             foreach (var category in NewsPerCategory)
             {
-                toReturn.AddRange( db.News.Where(n => n.Source.Category == category.Key).Take(category.Value) );
+                toReturn.AddRange( db.News.Where(n => n.Source.Category == category.Key).OrderByDescending(n => n.PubDate).Take(category.Value) );
             }
 
             return toReturn;

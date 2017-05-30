@@ -31,7 +31,15 @@ namespace RSSNews.Controllers
                 servs.AcquireNewsForSource(source);
             }
 
-            return View(servs.GetNewsForUser(10, User.Identity.GetUserId()));  //View(db.News.ToList());
+            if (User.Identity.IsAuthenticated)
+            {
+                return View(servs.GetNewsForUser(10, User.Identity.GetUserId()));
+            }
+            else
+            {
+                return View(db.News.OrderByDescending(n => n.PubDate).Take(10).ToList());
+            }
+            
         }
 
         // GET: News/Details/5
