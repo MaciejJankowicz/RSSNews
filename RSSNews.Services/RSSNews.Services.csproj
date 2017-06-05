@@ -62,10 +62,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BGTasks\CheckSources.cs" />
     <Compile Include="BGTasks\CleanUpNews.cs" />
     <Compile Include="JobScheduler.cs" />
     <Compile Include="RSSHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SourcesXMLHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RSSNews.Models\RSSNews.Models.csproj">

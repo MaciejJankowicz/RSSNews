@@ -17,7 +17,8 @@ namespace RSSNews
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-            JobScheduler.Start();
+            SourcesXMLHandler.CreateXMLIfNotExists(Server.MapPath("~/Sources.xml"));
+            JobScheduler.Start(Server.MapPath("~/Sources.xml"));
         }
     }
 }

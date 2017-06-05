@@ -11,11 +11,31 @@ namespace RSSNews.Services
 {
     public class JobScheduler
     {
-        public static void Start()
+        public static void Start(string sourcesXMLPath)
         {
             IScheduler scheduler = StdSchedulerFactory.GetDefaultScheduler();
             scheduler.Start();
 
+            CheckSourcesStart(scheduler, sourcesXMLPath);
+            CleanUpNewsStart(scheduler);
+        }
+
+        private static void CheckSourcesStart(IScheduler scheduler, string XMLPath)
+        {
+            IJobDetail job = JobBuilder.Create<CheckSources>().UsingJobData("XMLPath", XMLPath).Build();
+
+            ITrigger trigger = TriggerBuilder.Create()
+                .StartNow()
+                .WithSimpleSchedule(x => x
+                    .WithIntervalInSeconds(Int32.Parse(ConfigurationManager.AppSettings["CheckSourcesInterval"]))
+                    .RepeatForever())
+                .Build();
+
+            scheduler.ScheduleJob(job, trigger);
+        }
+
+        public static void CleanUpNewsStart(IScheduler scheduler)
+        {
             IJobDetail job = JobBuilder.Create<CleanUpNews>().Build();
 
             ITrigger trigger = TriggerBuilder.Create()
@@ -27,5 +47,6 @@ namespace RSSNews.Services
 
             scheduler.ScheduleJob(job, trigger);
         }
+
     }
 }

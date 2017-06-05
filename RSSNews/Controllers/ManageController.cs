@@ -7,6 +7,9 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using RSSNews.Models;
+using System.Net;
+using RSSNews.Repository;
+using System.Collections.Generic;
 
 namespace RSSNews.Controllers
 {
@@ -97,6 +100,47 @@ namespace RSSNews.Controllers
                 message = ManageMessageId.Error;
             }
             return RedirectToAction("ManageLogins", new { Message = message });
+        }
+
+        public ActionResult Delete()
+        {
+            return View();
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> DeleteConfirmed()
+        {
+            var id = User.Identity.GetUserId();
+            if (ModelState.IsValid)
+            {
+                if (id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+
+                var user = await UserManager.FindByIdAsync(id);
+                var result = await UserManager.DeleteAsync(user);
+                if (result.Succeeded)
+                {
+                    using (var db = new RSSNewsContext())
+                    {
+                        List<UserLikesCategory> toDelete = new List<UserLikesCategory>();
+                        toDelete.AddRange(db.UserLikesCategories.Where(n => n.UserId == id));
+                        if (toDelete.Count > 0)
+                        {
+                            db.UserLikesCategories.RemoveRange(toDelete);
+                            await db.SaveChangesAsync();
+                        }                     
+                    }
+                    AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+                }
+                return RedirectToAction("Index","News");
+            }
+            else
+            {
+                return View();
+            }
         }
 
         //

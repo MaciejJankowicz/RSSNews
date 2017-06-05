@@ -44,6 +44,7 @@
     <Compile Include="News.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Source.cs" />
+    <Compile Include="SourceXML.cs" />
     <Compile Include="UserLikesCategory.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

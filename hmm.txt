@@ -13,11 +13,11 @@ EXEC(@kill);
 
 ////////////////////////////////////
 
-dowiazanie kategorii do usera
+//dowiazanie kategorii do usera
 
 odswiezanie rss w tle
 
-sortowanie news?
+//sortowanie news?
 
 RSSNewsContext do services?
 
@@ -25,9 +25,9 @@ tabela kategorii?
 
 skad brac zrodla- odgorne
 
-kategorie news
+//kategorie news
 
-daty
+//daty
 
 wybor zrodel
 
