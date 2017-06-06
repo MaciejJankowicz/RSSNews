@@ -64,7 +64,7 @@ namespace RSSNews.Services
             db.SaveChanges();
         }
 
-        public List<News> GetNewsForUser(int count, string uId)
+        public List<News> GetNewsForUser(int count, string uId, ref Dictionary<string, int> ONewsPerCategory)
         {
             int CT = 0; // CT = Chance Total;
             int CS = 0; // CS = Current Sum;
@@ -100,11 +100,28 @@ namespace RSSNews.Services
             }
 
             List<News> toReturn = new List<News>();
-            foreach (var category in NewsPerCategory)
+            if (ONewsPerCategory == null)
             {
-                toReturn.AddRange( db.News.Where(n => n.Source.Category == category.Key).OrderByDescending(n => n.PubDate).Take(category.Value) );
+                foreach (var category in NewsPerCategory)
+                {
+                    toReturn.AddRange(db.News.Where(n => n.Source.Category == category.Key).OrderByDescending(n => n.PubDate).Take(category.Value));
+                }
+                ONewsPerCategory = NewsPerCategory;
+            }
+            else
+            {
+                foreach (var category in NewsPerCategory)
+                {
+                    toReturn.AddRange(db.News.Where(n => n.Source.Category == category.Key).OrderByDescending(n => n.PubDate).Skip(ONewsPerCategory[category.Key]).Take(category.Value));
+                    ONewsPerCategory[category.Key] += category.Value;
+                }
             }
 
+            if (toReturn.Count <= 0 && NewsPerCategory.Count > 0 && db.News.Count() > 0)
+            {
+                ONewsPerCategory = null;
+                return GetNewsForUser(count, uId, ref ONewsPerCategory);
+            }
             return toReturn;
         }
 

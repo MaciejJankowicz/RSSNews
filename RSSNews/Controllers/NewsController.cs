@@ -10,13 +10,30 @@ using RSSNews.Models;
 using RSSNews.Repository;
 using RSSNews.Services;
 using Microsoft.AspNet.Identity;
+using System.IO;
 
 namespace RSSNews.Controllers
 {
+    public static class RazorViewToString
+    {
+        public static string RenderRazorViewToString(this Controller controller, string viewName, object model)
+        {
+            controller.ViewData.Model = model;
+            using (var sw = new StringWriter())
+            {
+                var viewResult = ViewEngines.Engines.FindPartialView(controller.ControllerContext, viewName);
+                var viewContext = new ViewContext(controller.ControllerContext, viewResult.View, controller.ViewData, controller.TempData, sw);
+                viewResult.View.Render(viewContext, sw);
+                viewResult.ViewEngine.ReleaseView(controller.ControllerContext, viewResult.View);
+                return sw.GetStringBuilder().ToString();
+            }
+        }
+    }
     public class NewsController : Controller
     {
         private RSSNewsContext db;
         private RSSHandler servs;
+        private Random Randomizer = new Random();
         public NewsController()
         {
             db = new RSSNewsContext();
@@ -33,7 +50,10 @@ namespace RSSNews.Controllers
 
             if (User.Identity.IsAuthenticated)
             {
-                return View(servs.GetNewsForUser(10, User.Identity.GetUserId()));
+                var NewsSent = (Dictionary<string, int>)(TempData["NewsSent"]);
+                var ToView = servs.GetNewsForUser(10, User.Identity.GetUserId(), ref NewsSent);
+                TempData["NewsSent"] = NewsSent;
+                return View(ToView);
             }
             else
             {
@@ -41,6 +61,23 @@ namespace RSSNews.Controllers
             }
             
         }
+
+        public string GetRow()
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                var NewsSent = (Dictionary<string, int>)(TempData["NewsSent"]);
+                var ToView = servs.GetNewsForUser(1, User.Identity.GetUserId(), ref NewsSent);
+                TempData["NewsSent"] = NewsSent;
+                return RazorViewToString.RenderRazorViewToString(this, "RowPartial", ToView.FirstOrDefault());
+            }
+            else
+            {
+                return RazorViewToString.RenderRazorViewToString(this, "RowPartial", db.News.ElementAt(Randomizer.Next(db.News.Count())) );
+            }
+        }
+
+
 
         // GET: News/Details/5
         public ActionResult Details(int? id)

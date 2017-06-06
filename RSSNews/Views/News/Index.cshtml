@@ -4,8 +4,6 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
-
 <table class="table">
     <tr>
         <th>
@@ -15,56 +13,34 @@
             @Html.DisplayNameFor(model => model.Description)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Link)
-        </th>
-        <th>
             @Html.DisplayNameFor(model => model.PubDate)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.Category)
         </th>
-@if (User.Identity.IsAuthenticated)
-{
-        <th></th>
-}
-    </tr>
-
-@foreach (var item in Model) {
-    if (item.Category == "None")
-    {
-        item.Category = item.Source.Category;
-    }
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Title)
-        </td>
-        <td>
-            @Html.Raw(item.Description)
-            @*@Html.DisplayFor(modelItem => item.Description)*@
-        </td>
-        <td>
-            <a href="@item.Link">Link</a>
-            @*@Html.L(modelItem => item.Link)*@
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.PubDate)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Category)
-        </td>
         @if (User.Identity.IsAuthenticated)
         {
-        <td>
-            <input type="button" class="btn btn-primary like" id="like" value="Like" data-id="@($"{item.Id}")" />
-        </td>
+            <th></th>
         }
     </tr>
-}
 
+    @foreach (var item in Model)
+    {
+        @Html.Partial("RowPartial", item);
+    }
+
+
+
+    @{ var first = Model.FirstOrDefault(); }
+        @Html.Partial("RowPartial", first);
 </table>
 
+<input type="button" class="btn btn-default moar" id="moar" value="More"/>
+
+
+
 @if (User.Identity.IsAuthenticated)
-{
+    {
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <script type="text/javascript">
         $(function () {
@@ -89,6 +65,29 @@
                     //}
                 });
                 btn.attr("disabled", true);
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(function () {
+            $(".moar").click(function () {
+                var btn = $(this);
+                $.ajax({
+                    type: "POST",
+                    url: "/News/GetRow",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "text",
+                    success: function (response) {
+                        $(".table").append(response);
+                    },
+                    //failure: function (response) {
+                    //    alert(response.responseText);
+                    //},
+                    //error: function (response) {
+                    //    alert(response.responseText);
+                    //}
+                });
             });
         });
     </script>
