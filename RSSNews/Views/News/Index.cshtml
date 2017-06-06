@@ -92,3 +92,20 @@
         });
     </script>
 
+<script type="text/javascript">
+$(window).scroll(function() {
+   if($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
+       alert("near bottom!");
+       $.ajax({
+           type: "POST",
+           url: "/News/GetRow",
+           contentType: "application/json; charset=utf-8",
+           dataType: "text",
+           success: function (response) {
+               $(".table").append(response);
+           },
+       });
+   }
+});
+    </script>
+
