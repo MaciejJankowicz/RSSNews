@@ -73,7 +73,7 @@ namespace RSSNews.Controllers
             }
             else
             {
-                return RazorViewToString.RenderRazorViewToString(this, "RowPartial", db.News.ElementAt(Randomizer.Next(db.News.Count())) );
+                return RazorViewToString.RenderRazorViewToString(this, "RowPartial", db.News.ToList().ElementAt(Randomizer.Next(db.News.Count())) );
             }
         }
 

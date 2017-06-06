@@ -38,10 +38,9 @@
 <input type="button" class="btn btn-default moar" id="moar" value="More"/>
 
 
-
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 @if (User.Identity.IsAuthenticated)
     {
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <script type="text/javascript">
         $(function () {
             $(".like").click(function () {
@@ -68,6 +67,7 @@
             });
         });
     </script>
+}
 
     <script type="text/javascript">
         $(function () {
@@ -91,4 +91,4 @@
             });
         });
     </script>
-}
+
