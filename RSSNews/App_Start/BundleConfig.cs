@@ -8,7 +8,11 @@ namespace RSSNews
         // For more information on bundling, visit http://go.microsoft.com/fwlink/?LinkId=301862
         public static void RegisterBundles(BundleCollection bundles)
         {
-            bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
+            bundles.UseCdn = true;
+           
+
+            bundles.Add(new ScriptBundle("~/bundles/jquery",
+                        "http://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.min.js").Include(
                         "~/Scripts/jquery-{version}.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
@@ -26,6 +30,9 @@ namespace RSSNews
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css"));
+
+            BundleTable.EnableOptimizations = true;
+
         }
     }
 }

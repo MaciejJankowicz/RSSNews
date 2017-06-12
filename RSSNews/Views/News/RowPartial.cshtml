@@ -1,46 +1,6 @@
-﻿@model RSSNews.Models.News  
+﻿@model IEnumerable<RSSNews.Models.News>
      
-@if (Model.Category == "None")
-{
-    Model.Category = Model.Source.Category;
-}
-<tr>
-    <td>
-        <a href="@Model.Link">@Html.DisplayFor(modelItem => Model.Title)</a>
-    </td>
-    <td>
-        @Html.Raw(Model.Description)       
-        @*@Html.DisplayFor(modelItem => item.Description)*@
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => Model.PubDate)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => Model.Category)
-    </td>
-    @if (User.Identity.IsAuthenticated)
-            {
-        <td>
-            <input type="button" class="btn btn-primary like" id="like" value="Like" data-id="@($"{Model.Id}")" />
-        </td>
-    }
-</tr>
-
-
-
-
-
-    @*<div class="row">
-        <div class="col-xs-3">
-            <a href="@Model.Link">@Html.DisplayFor(modelItem => Model.Title)</a>
-        </div>
-        <div class="col-xs-3">
-            @Html.Raw(Model.Description)
-        </div>
-        <div class="col-xs-3">
-            @Html.DisplayFor(modelItem => Model.PubDate)
-        </div>
-        <div class="col-xs-3">
-            @Html.DisplayFor(modelItem => Model.Category)
-        </div>
-    </div>*@
+<div class="row news">
+    @Html.Partial("RowElementPartial",Model.ElementAt(0))
+    @Html.Partial("RowElementPartial", Model.ElementAt(1))
+</div>

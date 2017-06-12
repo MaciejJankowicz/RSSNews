@@ -4,46 +4,32 @@
     ViewBag.Title = "Index";
 }
 
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Title)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Description)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.PubDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Category)
-        </th>
-        @if (User.Identity.IsAuthenticated)
-        {
-            <th></th>
-        }
-    </tr>
+<div class="rows">
 
-    @foreach (var item in Model)
-    {
-        @Html.Partial("RowPartial", item);
-    }
+@{
+    int i = 0;
+    IEnumerable<RSSNews.Models.News> ls = null;
+     }
+@while ((ls = Model.Skip(i * 2).Take(2)).Count() > 1)
+{
+    i++;
+    @Html.Partial("RowPartial", ls);
+}
+
+</div>
 
 
 
-    @{ var first = Model.FirstOrDefault(); }
-        @Html.Partial("RowPartial", first);
-</table>
+<input type="button" class="btn btn-default moar" id="moar" value="More" />
 
-<input type="button" class="btn btn-default moar" id="moar" value="More"/>
-
-
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+@Scripts.Render("~/bundles/jquery")
+@*<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>*@
 @if (User.Identity.IsAuthenticated)
-    {
+{
     <script type="text/javascript">
-        $(function () {
-            $(".like").click(function () {
+        //$(function () {
+            $(document).on('click', '.like', function(e) {
+            //$(".like").click(function () {
                 var btn = $(this);
                 var id = btn.attr("data-id");
                 $.ajax({
@@ -52,43 +38,46 @@
                     data: `{id: "${id}" }`,
                     contentType: "application/json; charset=utf-8",
                     dataType: "text",
-                    //success: function (response) {
-                    //    alert("Hello: " + response);
-                    //    btn.parent().prev().prev().html(response);
-                    //},
-                    //failure: function (response) {
-                    //    alert(response.responseText);
-                    //},
-                    //error: function (response) {
-                    //    alert(response.responseText);
-                    //}
                 });
                 btn.attr("disabled", true);
             });
-        });
+        //});
     </script>
 }
 
-    <script type="text/javascript">
-        $(function () {
-            $(".moar").click(function () {
-                var btn = $(this);
-                $.ajax({
-                    type: "POST",
-                    url: "/News/GetRow",
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "text",
-                    success: function (response) {
-                        $(".table").append(response);
-                    },
-                    //failure: function (response) {
-                    //    alert(response.responseText);
-                    //},
-                    //error: function (response) {
-                    //    alert(response.responseText);
-                    //}
-                });
+<script type="text/javascript">
+    //$(function () {
+    $(document).on('click', '.moar', function (e) {
+        //$(".moar").click(function () {
+            var btn = $(this);
+            $.ajax({
+                type: "POST",
+                url: "/News/GetRows",
+                data: `{count: "5" }`,
+                contentType: "application/json; charset=utf-8",
+                dataType: "text",
+                success: function (response) {
+                    $(".rows").append(response);
+                },
             });
         });
-    </script>
+    //});
+</script>
+
+<script>
+    $(window).scroll(function () {
+        if ($(window).scrollTop() + $(window).height() == $(document).height()) {
+            $.ajax({
+                type: "POST",
+                url: "/News/GetRows",
+                data: `{count: "5" }`,
+                contentType: "application/json; charset=utf-8",
+                dataType: "text",
+                success: function (response) {
+                    $(".rows").append(response);
+                },
+            });
+        }
+    });
+</script>
 

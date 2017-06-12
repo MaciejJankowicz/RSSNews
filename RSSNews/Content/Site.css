@@ -22,3 +22,41 @@ select,
 textarea {
     max-width: 280px;
 }
+
+.title {
+    font-size: 16px;
+    font-weight:700;
+}
+
+.date {
+    font-size: 8px;
+}
+
+.category {
+
+}
+
+input#moar {
+    margin: 0 auto;
+    margin-top: 5px;
+    display: block;
+}
+
+.row {   
+    padding-bottom : 5px;
+    padding-top : 5px;
+}
+
+.row-eq-height {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    align-items: center;
+}
+
+.row.news {
+    border-bottom-color: rgba(86, 61, 124, 0.2);
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+}

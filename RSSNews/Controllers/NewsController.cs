@@ -29,6 +29,7 @@ namespace RSSNews.Controllers
             }
         }
     }
+
     public class NewsController : Controller
     {
         private RSSNewsContext db;
@@ -62,117 +63,52 @@ namespace RSSNews.Controllers
             
         }
 
-        public string GetRow()
+        public string GetRows(int count)
         {
+            if (TempData["lastRowsDeliveredTime"] == null)
+            {
+                TempData["lastRowsDeliveredTime"] = DateTime.MinValue;
+            }
+            DateTime lastRowsDeliveredTime = (DateTime)TempData["lastRowsDeliveredTime"];
+            if (lastRowsDeliveredTime > DateTime.Now.AddMilliseconds(-500) )
+            {
+                TempData["lastRowsDeliveredTime"] = lastRowsDeliveredTime;
+                return "";
+            }
+                   
+            string toSend = "";
             if (User.Identity.IsAuthenticated)
             {
                 var NewsSent = (Dictionary<string, int>)(TempData["NewsSent"]);
-                var ToView = servs.GetNewsForUser(1, User.Identity.GetUserId(), ref NewsSent);
+                var ToView = servs.GetNewsForUser(count*2, User.Identity.GetUserId(), ref NewsSent);
                 TempData["NewsSent"] = NewsSent;
-                return RazorViewToString.RenderRazorViewToString(this, "RowPartial", ToView.FirstOrDefault());
+
+                for (int i = 0; i < count; i++)
+                {
+                    
+                    if (ToView.Count >(i*2 + 2))
+                    {
+                        toSend += RazorViewToString.RenderRazorViewToString(this, "RowPartial", ToView.Skip(i * 2).Take(2));
+                    }                   
+                }
+                TempData["lastRowsDeliveredTime"] = DateTime.Now;
+                return toSend;
             }
             else
             {
-                return RazorViewToString.RenderRazorViewToString(this, "RowPartial", db.News.ToList().ElementAt(Randomizer.Next(db.News.Count())) );
+                for (int i = 0; i < count; i++)
+                {
+                    int m, n;
+                    m = Randomizer.Next(db.News.Count());
+                    n = Randomizer.Next(db.News.Count());
+                    var lDb = db.News.ToList();
+                    List<News> lN = new List<News> { lDb.ElementAt(m), lDb.ElementAt(n) };
+                    toSend += RazorViewToString.RenderRazorViewToString(this, "RowPartial", lN);
+                }
+                TempData["lastRowsDeliveredTime"] = DateTime.Now;
+                return toSend;  
             }
-        }
-
-
-
-        // GET: News/Details/5
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            News news = db.News.Find(id);
-            if (news == null)
-            {
-                return HttpNotFound();
-            }
-            return View(news);
-        }
-
-        // GET: News/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: News/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Title,Description,Link,PubDate,Category")] News news)
-        {
-            if (ModelState.IsValid)
-            {
-                db.News.Add(news);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-
-            return View(news);
-        }
-
-        // GET: News/Edit/5
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            News news = db.News.Find(id);
-            if (news == null)
-            {
-                return HttpNotFound();
-            }
-            return View(news);
-        }
-
-        // POST: News/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Title,Description,Link,PubDate,Category")] News news)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Entry(news).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View(news);
-        }
-
-        // GET: News/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            News news = db.News.Find(id);
-            if (news == null)
-            {
-                return HttpNotFound();
-            }
-            return View(news);
-        }
-
-        // POST: News/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            News news = db.News.Find(id);
-            db.News.Remove(news);
-            db.SaveChanges();
-            return RedirectToAction("Index");
-        }
+        } 
 
         [HttpPost]
         public void LikeNews(int id)
