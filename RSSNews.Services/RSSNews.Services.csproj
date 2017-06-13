@@ -66,6 +66,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BGTasks\AcquireNews.cs" />
     <Compile Include="BGTasks\CheckSources.cs" />
     <Compile Include="BGTasks\CleanUpNews.cs" />
     <Compile Include="HTMLManipulation.cs" />

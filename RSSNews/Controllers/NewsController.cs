@@ -44,10 +44,10 @@ namespace RSSNews.Controllers
         // GET: News
         public ActionResult Index()
         {
-            foreach (Source source in db.Sources.ToList())
-            {
-                servs.AcquireNewsForSource(source);
-            }
+            //foreach (Source source in db.Sources.ToList())
+            //{
+            //    servs.AcquireNewsForSource(source);
+            //}
 
             if (User.Identity.IsAuthenticated)
             {

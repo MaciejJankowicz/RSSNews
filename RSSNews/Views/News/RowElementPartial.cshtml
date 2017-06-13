@@ -6,9 +6,13 @@
 }
 
 @{ 
-    string descrTxt = Model.Description;
-    var descrImgs = HTMLManipulation.SplitOffImgs(ref descrTxt);
-}
+            string descrTxt = Model.Description;
+            var descrImgs = HTMLManipulation.SplitOffImgs(ref descrTxt);
+            if (descrImgs.Count < 1)
+            {
+                descrImgs.Add($"<img src=\"{Url.Content("~/Images/tales3.jpg")}\">");
+            }
+        }
 
 <div class="col-md-6 col-sm-12">
     <div class="row">

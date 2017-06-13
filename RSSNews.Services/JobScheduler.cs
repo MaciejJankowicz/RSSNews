@@ -18,6 +18,7 @@ namespace RSSNews.Services
 
             CheckSourcesStart(scheduler, sourcesXMLPath);
             CleanUpNewsStart(scheduler);
+            AcquireNewsStart(scheduler);
         }
 
         private static void CheckSourcesStart(IScheduler scheduler, string XMLPath)
@@ -42,6 +43,20 @@ namespace RSSNews.Services
                 .StartNow()
                 .WithSimpleSchedule(x => x
                     .WithIntervalInSeconds(Int32.Parse(ConfigurationManager.AppSettings["CleanUpInterval"]))
+                    .RepeatForever())
+                .Build();
+
+            scheduler.ScheduleJob(job, trigger);
+        }
+
+        public static void AcquireNewsStart(IScheduler scheduler)
+        {
+            IJobDetail job = JobBuilder.Create<AcquireNews>().Build();
+
+            ITrigger trigger = TriggerBuilder.Create()
+                .StartNow()
+                .WithSimpleSchedule(x => x
+                    .WithIntervalInSeconds(Int32.Parse(ConfigurationManager.AppSettings["AcquireNewsInterval"]))
                     .RepeatForever())
                 .Build();
 
