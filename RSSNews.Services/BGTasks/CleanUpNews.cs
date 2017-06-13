@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Quartz;
 using RSSNews.Repository;
 using RSSNews.Models;
+using System.Configuration;
 
 namespace RSSNews.Services.BGTasks
 {
@@ -15,7 +16,7 @@ namespace RSSNews.Services.BGTasks
         {
             using (RSSNewsContext db = new RSSNewsContext())
             {
-                DateTime maxDateOk = DateTime.UtcNow.AddDays(-5.0);
+                DateTime maxDateOk = DateTime.UtcNow.AddDays(-(Int32.Parse(ConfigurationManager.AppSettings["DaysTillOldNews"])));
                 var ToDel = db.News.Where(n => n.PubDate < maxDateOk);
                 if (ToDel.Count() > 0)
                 {

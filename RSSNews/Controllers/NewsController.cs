@@ -51,6 +51,7 @@ namespace RSSNews.Controllers
 
             if (User.Identity.IsAuthenticated)
             {
+                TempData["NewsSent"] = null;
                 var NewsSent = (Dictionary<string, int>)(TempData["NewsSent"]);
                 var ToView = servs.GetNewsForUser(10, User.Identity.GetUserId(), ref NewsSent);
                 TempData["NewsSent"] = NewsSent;
